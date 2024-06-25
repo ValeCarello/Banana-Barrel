@@ -6,6 +6,7 @@ export default class Game extends Phaser.Scene {
 
     // Variable to count collected bananas
     this.bananasCollected = 0;
+    this.lives = 3; // Initialize player lives
   }
 
   preload() {
@@ -22,13 +23,20 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
+    // Initialize player lives
+    this.lives = 3;
+    this.livesImages = [];
+
+    // Reset score
+    this.bananasCollected = 0;
+
     // Create background and platforms
     this.background = this.add.image(400, 300, "background");
     this.platform = this.physics.add.staticGroup();
     this.platform.create(400, 568, "platform").setScale(1.9).refreshBody();
 
     // Create player sprite from atlas
-    this.player = this.physics.add.sprite(128, 128, "player", "adventurer-idle-00.png");
+    this.player = this.physics.add.sprite(400, 420, "player", "adventurer-idle-00.png");
     this.player.setScale(3);
     this.player.body.setSize(this.player.width * 0.5, this.player.height * 0.7);
 
@@ -63,10 +71,12 @@ export default class Game extends Phaser.Scene {
 
     // Create text for the bananas counter
     this.bananaText = this.add.text(10, 10, 'Bananas: 0', { fontSize: '24px', fill: '#ffffff' });
-  
-     // Detectar colisión con objetos que causan Game Over
-     this.physics.add.collider(this.player, [this.coconutObjects, this.rockObjects, this.pineappleObjects], this.gameOver, null, this);
-  
+
+    // Show player lives in the top left corner
+    for (let i = 0; i < this.lives; i++) {
+      const lifeImage = this.add.image(50 + i * 30, 50, 'banana-life').setScale(0.02);
+      this.livesImages.push(lifeImage);
+    }
   }
 
   dropObject() {
@@ -78,31 +88,62 @@ export default class Game extends Phaser.Scene {
 
     if (randomObject === "banana") {
       object = this.physics.add.image(x, y, randomObject);
-      object.setScale(0.15).setGravityY(300);
+      object.setScale(0.05).setGravityY(300);
 
-      // Collider solo con la plataforma
-      this.physics.add.collider(object, this.platform);
+      // Collider only with the platform
+      this.physics.add.collider(object, this.platform, (banana, platform) => {
+        this.loseLife(); // Reduce life when the banana touches the platform
+        banana.destroy();
+      });
 
-      // Recolectar banana al tocarla
+      // Collect banana on overlap
       this.physics.add.overlap(this.player, object, this.collectBanana, null, this);
+    } else if (randomObject === "peach") {
+      if (this.lives < 3) { // Only drop peach if not at maximum lives
+        object = this.physics.add.image(x, y, randomObject);
+        object.setScale(0.15).setGravityY(300);
+  
+        // Collider only with the platform
+        this.physics.add.collider(object, this.platform, (peach, platform) => {
+          peach.destroy();
+        });
+        
+        // Collider only with the player
+        this.physics.add.collider(object, this.player, (peach, player) => {
+          this.collectPeach();
+          peach.destroy();
+        });
+      }
     } else {
       object = this.physics.add.image(x, y, randomObject);
-      object.setScale(0.15).setGravityY(300);
+      object.setScale(0.08).setGravityY(300);
 
       // Set collision with the platform
       this.physics.add.collider(object, this.platform, (object, platform) => {
-        // Set horizontal velocity based on the desired direction
         if (randomObject === "rock") {
-          object.setVelocity(150, -250); // Example direction right and up
+          object.setVelocity(150, -350); // Example direction right and up
         } else if (randomObject === "coconut") {
-          object.setVelocity(-150, -250); // Example direction left and up
+          object.setVelocity(-150, -350); // Example direction left and up
         } else if (randomObject === "pineapple") {
-          object.setVelocity(150, -250); // Example direction right and up
+          object.setVelocity(150, -350); // Example direction right and up
         }
       });
+
+      // Lose all lives on overlap with dangerous objects
+      this.physics.add.overlap(this.player, object, this.loseAllLives, null, this);
     }
   }
-  // Función para mostrar la escena de Game Over
+
+  collectPeach() {
+    // Increase lives only if not exceeding maximum of three
+    if (this.lives < 3) {
+      this.lives++;
+      const lifeImage = this.add.image(50 + this.livesImages.length * 30, 50, 'banana-life').setScale(0.02);
+      this.livesImages.push(lifeImage);
+    }
+  }
+
+  // Function to show the Game Over scene
   gameOver() {
     this.scene.start("gameOver");
   }
@@ -175,6 +216,34 @@ export default class Game extends Phaser.Scene {
     // Destroy the banana from the game
     banana.destroy();
   }
+
+  // Function called when the player loses a life
+  loseLife() {
+    this.lives--;
+
+    // Remove one life image
+    if (this.livesImages.length > 0) {
+      const lifeImage = this.livesImages.pop();
+      lifeImage.destroy();
+    }
+
+    // Check for game over
+    if (this.lives <= 0) {
+      this.gameOver();
+    }
+  }
+
+  // Function called when the player loses all lives (hits dangerous objects)
+  loseAllLives(player, object) {
+    this.lives = 0;
+
+    // Destroy all life images
+    while (this.livesImages.length > 0) {
+      const lifeImage = this.livesImages.pop();
+      lifeImage.destroy();
+    }
+
+    // Trigger game over
+    this.gameOver();
+  }
 }
-
-
