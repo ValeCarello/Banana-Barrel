@@ -12,7 +12,7 @@ export default class GameOver extends Phaser.Scene {
       
       // Restart the game when the player clicks anywhere
       this.input.on('pointerdown', () => {
-        this.scene.start('game'); // Restart the game scene
+        this.scene.start('game'); 
       });
     }
   }

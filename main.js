@@ -2,7 +2,7 @@
 
 import Game from "./scenes/Game.js";
 import GameOver from "./scenes/GameOver.js";
-import StartScene from "./scenes/StartScene.js"; // Import the new scene
+import StartScene from "./scenes/StartScene.js"; 
 
 const config = {
   type: Phaser.AUTO,
@@ -26,7 +26,7 @@ const config = {
       debug: true,
     },
   },
-  scene: [StartScene, Game, GameOver], // Add StartScene as the first scene to load
+  scene: [StartScene, Game, GameOver],
 };
 
 window.game = new Phaser.Game(config);

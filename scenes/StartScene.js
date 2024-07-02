@@ -10,7 +10,7 @@ export default class StartScene extends Phaser.Scene {
   
       // Listen for keyboard events to start the game
       this.input.keyboard.on('keydown', () => {
-        this.scene.start('game'); // Start the game scene when any key is pressed
+        this.scene.start('game'); 
       });
     }
   }
