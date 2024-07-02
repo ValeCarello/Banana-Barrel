@@ -22,6 +22,7 @@ export default class Game extends Phaser.Scene {
     this.load.image("coconut", "./public/assets/coconut.png");
     this.load.image("peach", "./public/assets/peach.png");
     this.load.image("pineapple", "./public/assets/pineapple.png");
+    this.load.image("barrel", "./public/assets/barrel.png")
   }
 
   create() {
@@ -32,8 +33,8 @@ export default class Game extends Phaser.Scene {
 
     // Player
     this.player = this.physics.add.sprite(400, 420, "player", "adventurer-idle-00.png");
-    this.player.setScale(3);
-    this.player.body.setSize(this.player.width * 0.2, this.player.height * 0.5);
+    this.player.setScale(1);
+    this.player.body.setSize(this.player.width * 0.5, this.player.height * 0.7);
     this.player.setGravityY(3900);
 
     // Collisions
@@ -51,23 +52,35 @@ export default class Game extends Phaser.Scene {
 
     // Object dropping
     this.time.addEvent({
-      delay: 2000,
+      delay: 1500,
       callback: this.dropObject,
       callbackScope: this,
       loop: true
     });
 
     // UI
-    this.bananaText = this.add.text(10, 10, 'Bananas: 0', { fontSize: '24px', fill: '#ffffff' });
+    this.bananaText = this.add.text(100, 38, '0', { fontSize: '25px', fill: '#000000', fontWeight: "bold" })
+    this.add.image(70,50, "barrel").setScale(0.5);
     this.livesImages = [];
     this.updateLivesUI(); // Update lives UI
     this.objectFallSpeed = 300; // Initial object fall speed
 
     // Increase difficulty over time
     this.time.addEvent({
-      delay: 10000, // Increase every 10 seconds
+      delay: 3000, // Increase every 10 seconds
       callback: () => {
-        this.objectFallSpeed += 50; // Increase object fall speed
+        this.objectFallSpeed += 1;
+         
+      },
+      loop: true
+    });
+
+     // Increase difficulty over time
+    this.time.addEvent({
+      delay: 3000, 
+      callback: () => {
+        this.delay += 10;
+        
       },
       loop: true
     });
@@ -115,7 +128,7 @@ export default class Game extends Phaser.Scene {
     // Create and handle different objects
     if (randomObject === "banana") {
       object = this.physics.add.image(x, y, randomObject);
-      object.setScale(1.5).setGravityY(600); 
+      object.setScale(1.5).setGravityY(400); 
       this.physics.add.collider(object, this.platform, (banana, platform) => {
         this.loseLife();
         banana.destroy();
@@ -124,7 +137,7 @@ export default class Game extends Phaser.Scene {
     } else if (randomObject === "peach") {
       if (this.lives < this.initialLives) { // Drop peach only if lives are less than max
         object = this.physics.add.image(x, y, randomObject);
-        object.setScale(1.5).setGravityY(500); // Scale and gravity
+        object.setScale(1.5).setGravityY(100); // Scale and gravity
         this.physics.add.collider(object, this.platform, (peach, platform) => {
           peach.destroy();
         });
@@ -135,7 +148,7 @@ export default class Game extends Phaser.Scene {
       }
     } else {
       object = this.physics.add.image(x, y, randomObject);
-      object.setScale(1.5).setGravityY(800).setSize(30, 30); // Scale and gravity
+      object.setScale(1.5).setGravityY(750).setSize(30, 30); // Scale and gravity
       this.physics.add.collider(object, this.platform, (object, platform) => {
         if (randomObject === "rock") {
           object.setVelocity(150, -350); // Example direction right and up
@@ -163,7 +176,7 @@ export default class Game extends Phaser.Scene {
   collectBanana(player, banana) {
     banana.disableBody(true, true); // Disable physics and hide banana
     this.bananasCollected++; // Increment banana count
-    this.bananaText.setText(`Bananas: ${this.bananasCollected}`); // Update UI text
+    this.bananaText.setText(`${this.bananasCollected}`); // Update UI text
     banana.destroy(); // Remove banana from game
   }
 
@@ -207,7 +220,7 @@ export default class Game extends Phaser.Scene {
 
     // Display current lives
     for (let i = 0; i < this.lives; i++) {
-      const lifeImage = this.add.image(50 + i * 30, 50, 'banana-life');
+      const lifeImage = this.add.image(50 + i * 40, 110, 'banana-life');
       this.livesImages.push(lifeImage); // Store life images
     }
   }
