@@ -43,8 +43,7 @@ export default class Game extends Phaser.Scene {
     // Set specific gravity for the player
     this.player.setGravityY(850);
 
-    // Enable world bounds collision
-    this.physics.world.setBoundsCollision(true, true, true, false);
+    
 
     // Set up collisions
     this.physics.add.collider(this.player, this.platform, this.onPlatform, null, this);
@@ -172,8 +171,8 @@ export default class Game extends Phaser.Scene {
   // Function to keep player on the platform
   keepPlayerOnPlatform() {
     const platform = this.platform.children.entries[0];
-    const platformLeftEdge = platform.x - (platform.displayWidth / 2) + 40;
-    const platformRightEdge = platform.x + (platform.displayWidth / 2) - 40;
+    const platformLeftEdge = platform.x - (platform.displayWidth / 2) ;
+    const platformRightEdge = platform.x + (platform.displayWidth / 2);
 
     if (this.player.x < platformLeftEdge) {
       this.player.x = platformLeftEdge;
