@@ -1,8 +1,8 @@
 // main.js
 
-import Game from "../scenes/Game.js";
-import GameOver from "../scenes/GameOver.js";
-import StartScene from "../scenes/StartScene.js"; // Import the new scene
+import Game from "./scenes/Game.js";
+import GameOver from "./scenes/GameOver.js";
+import StartScene from "./scenes/StartScene.js"; // Import the new scene
 
 const config = {
   type: Phaser.AUTO,
