@@ -16,25 +16,25 @@ export default class Game extends Phaser.Scene {
     this.load.image("background", "./public/assets/background.png");
     this.load.image("platform", "./public/assets/platform.png");
     this.load.atlas("player", "./public/assets/player.png", "./public/assets/player.json");
-    this.load.image("banana", "./public/assets/banana.webp");
+    this.load.image("banana", "./public/assets/banana.png");
     this.load.image("banana-life", "./public/assets/banana-life.png");
-    this.load.image("rock", "./public/assets/rock.webp");
-    this.load.image("coconut", "./public/assets/coconut.webp");
+    this.load.image("rock", "./public/assets/rock.png");
+    this.load.image("coconut", "./public/assets/coconut.png");
     this.load.image("peach", "./public/assets/peach.png");
-    this.load.image("pineapple", "./public/assets/pineapple.webp");
+    this.load.image("pineapple", "./public/assets/pineapple.png");
   }
 
   create() {
     // Background and platform
-    this.add.image(400, 300, "background");
+    this.add.image(400, 300, "background").setScale(1.24);
     this.platform = this.physics.add.staticGroup();
-    this.platform.create(400, 568, "platform").setScale(1.9).refreshBody();
+    this.platform.create(400, 568, "platform").setScale(1).refreshBody();
 
     // Player
     this.player = this.physics.add.sprite(400, 420, "player", "adventurer-idle-00.png");
     this.player.setScale(3);
-    this.player.body.setSize(this.player.width * 0.5, this.player.height * 0.7);
-    this.player.setGravityY(850);
+    this.player.body.setSize(this.player.width * 0.2, this.player.height * 0.5);
+    this.player.setGravityY(3900);
 
     // Collisions
     this.physics.add.collider(this.player, this.platform, this.onPlatform, null, this);
@@ -74,18 +74,10 @@ export default class Game extends Phaser.Scene {
   }
 
   update() {
-    // Player movement
-    if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-160);
-    } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(160);
-    } else {
-      this.player.setVelocityX(0);
-    }
-
+   
     // Mouse movement
     const mouseX = this.input.mousePointer.x;
-    const speed = 0.05; // Adjust how quickly player follows mouse
+    const speed = 0.09; // Adjust how quickly player follows mouse
     this.player.x = Phaser.Math.Interpolation.Linear([this.player.x, mouseX], speed);
 
     // Keep player on platform if on one
@@ -106,14 +98,12 @@ export default class Game extends Phaser.Scene {
 
   doJump() {
     if (this.player.body.touching.down || this.player.body.onFloor()) {
-      this.player.setVelocityY(-500); // Jump velocity
+      this.player.setVelocityY(-1150); // Jump velocity
       this.isOnPlatform = false; // Reset platform flag
     }
   }
 
-  playerHitWorldBounds() {
-    // Handle world bounds collision
-  }
+
 
   dropObject() {
     const objects = ["rock", "coconut", "pineapple", "banana", "peach"];
@@ -125,16 +115,16 @@ export default class Game extends Phaser.Scene {
     // Create and handle different objects
     if (randomObject === "banana") {
       object = this.physics.add.image(x, y, randomObject);
-      object.setScale(0.05).setGravityY(300); // Scale and gravity
+      object.setScale(1.5).setGravityY(600); 
       this.physics.add.collider(object, this.platform, (banana, platform) => {
-        this.loseLife(); // Lose life if banana hits platform
+        this.loseLife();
         banana.destroy();
       });
       this.physics.add.overlap(this.player, object, this.collectBanana, null, this);
     } else if (randomObject === "peach") {
       if (this.lives < this.initialLives) { // Drop peach only if lives are less than max
         object = this.physics.add.image(x, y, randomObject);
-        object.setScale(0.15).setGravityY(300); // Scale and gravity
+        object.setScale(1.5).setGravityY(500); // Scale and gravity
         this.physics.add.collider(object, this.platform, (peach, platform) => {
           peach.destroy();
         });
@@ -145,7 +135,7 @@ export default class Game extends Phaser.Scene {
       }
     } else {
       object = this.physics.add.image(x, y, randomObject);
-      object.setScale(0.08).setGravityY(300); // Scale and gravity
+      object.setScale(1.5).setGravityY(800).setSize(30, 30); // Scale and gravity
       this.physics.add.collider(object, this.platform, (object, platform) => {
         if (randomObject === "rock") {
           object.setVelocity(150, -350); // Example direction right and up
@@ -217,11 +207,10 @@ export default class Game extends Phaser.Scene {
 
     // Display current lives
     for (let i = 0; i < this.lives; i++) {
-      const lifeImage = this.add.image(50 + i * 30, 50, 'banana-life').setScale(0.02);
+      const lifeImage = this.add.image(50 + i * 30, 50, 'banana-life');
       this.livesImages.push(lifeImage); // Store life images
     }
   }
 }
-
 
 
