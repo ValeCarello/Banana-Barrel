@@ -17,12 +17,11 @@ export default class Game extends Phaser.Scene {
     this.load.image("background", "./public/assets/background.png");
     this.load.image("platform", "./public/assets/platform.png");
     this.load.atlas("player", "./public/assets/player.png", "./public/assets/player.json");
-    this.load.image("banana", "./public/assets/banana.png");
+    this.load.image("banana", "./public/assets/banana1.png");
     this.load.image("banana-life", "./public/assets/banana-life.png");
     this.load.image("rock", "./public/assets/rock.png");
     this.load.image("coconut", "./public/assets/coconut.png");
     this.load.image("peach", "./public/assets/peach.png");
-    this.load.image("pineapple", "./public/assets/pineapple.png");
     this.load.image("barrel", "./public/assets/barrel.png");
     this.load.audio('gameMusic', ['./public/audio/game_music.mp3', './public/audio/game_music.ogg']);
   }
@@ -149,7 +148,7 @@ export default class Game extends Phaser.Scene {
     // Create and handle different objects
     if (randomObject === "banana") {
       object = this.physics.add.image(x, y, randomObject);
-      object.setScale(1.5).setGravityY(400);
+      object.setScale(0.5).setGravityY(400);
       this.physics.add.collider(object, this.platform, (banana, platform) => {
         this.loseLife();
         banana.destroy();
@@ -158,7 +157,7 @@ export default class Game extends Phaser.Scene {
     } else if (randomObject === "peach") {
       if (this.lives < this.initialLives) { // Drop peach only if lives are less than max
         object = this.physics.add.image(x, y, randomObject);
-        object.setScale(1.5).setGravityY(100); // Scale and gravity
+        object.setScale(0.3).setGravityY(100); // Scale and gravity
         this.physics.add.collider(object, this.platform, (peach, platform) => {
           peach.destroy();
         });
@@ -169,12 +168,12 @@ export default class Game extends Phaser.Scene {
       }
     } else {
       object = this.physics.add.image(x, y, randomObject);
-      object.setScale(1.5).setGravityY(750).setSize(30, 30); // Scale and gravity
+      object.setScale(0.4).setGravityY(750).setSize(30, 30); // Scale and gravity
       this.physics.add.collider(object, this.platform, (object, platform) => {
         if (randomObject === "rock") {
-          object.setVelocity(150, -350); // Example direction right and up
+          object.setVelocity(150, -470); // Example direction right and up
         } else if (randomObject === "coconut") {
-          object.setVelocity(-150, -350); // Example direction left and up
+          object.setVelocity(-150, -470); // Example direction left and up
         }
       });
       this.physics.add.overlap(this.player, object, this.loseAllLives, null, this);
@@ -197,7 +196,7 @@ export default class Game extends Phaser.Scene {
     this.bananasCollected++; // Increment banana count
     this.bananaText.setText(`${this.bananasCollected}`); // Update UI text
     banana.destroy(); // Remove banana from game
-  }
+  } 
 
   loseLife() {
     this.lives--; // Decrease life count
