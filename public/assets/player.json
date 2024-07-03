@@ -1,94 +1,154 @@
 {
 	"frames": {
-		"player-jump.png": {
+		"Kong-idle-left.png": {
 			"frame": {
 				"x": 1,
 				"y": 1,
-				"w": 83,
-				"h": 96
+				"w": 85,
+				"h": 98
 			},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {
 				"x": 0,
 				"y": 0,
-				"w": 83,
-				"h": 96
+				"w": 85,
+				"h": 98
 			},
 			"sourceSize": {
-				"w": 83,
-				"h": 96
+				"w": 85,
+				"h": 98
 			}
 		},
-		"player-run-0.png": {
+		"Kong-idle-right.png": {
 			"frame": {
-				"x": 86,
+				"x": 88,
 				"y": 1,
-				"w": 83,
-				"h": 96
+				"w": 85,
+				"h": 98
 			},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {
 				"x": 0,
 				"y": 0,
-				"w": 83,
-				"h": 96
+				"w": 85,
+				"h": 98
 			},
 			"sourceSize": {
-				"w": 83,
-				"h": 96
+				"w": 85,
+				"h": 98
 			}
 		},
-		"player-run-01.png": {
-			"frame": {
-				"x": 171,
-				"y": 1,
-				"w": 83,
-				"h": 96
-			},
-			"rotated": false,
-			"trimmed": false,
-			"spriteSourceSize": {
-				"x": 0,
-				"y": 0,
-				"w": 83,
-				"h": 96
-			},
-			"sourceSize": {
-				"w": 83,
-				"h": 96
-			}
-		},
-		"player-run-02.png": {
+		"Kong-jump.png": {
 			"frame": {
 				"x": 1,
-				"y": 99,
-				"w": 83,
-				"h": 96
+				"y": 101,
+				"w": 85,
+				"h": 98
 			},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {
 				"x": 0,
 				"y": 0,
-				"w": 83,
-				"h": 96
+				"w": 85,
+				"h": 98
 			},
 			"sourceSize": {
-				"w": 83,
-				"h": 96
+				"w": 85,
+				"h": 98
+			}
+		},
+		"Kong-run-left-1.png": {
+			"frame": {
+				"x": 88,
+				"y": 101,
+				"w": 85,
+				"h": 98
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 85,
+				"h": 98
+			},
+			"sourceSize": {
+				"w": 85,
+				"h": 98
+			}
+		},
+		"Kong-run-left-2.png": {
+			"frame": {
+				"x": 175,
+				"y": 1,
+				"w": 85,
+				"h": 98
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 85,
+				"h": 98
+			},
+			"sourceSize": {
+				"w": 85,
+				"h": 98
+			}
+		},
+		"Kong-run-right-1.png": {
+			"frame": {
+				"x": 175,
+				"y": 101,
+				"w": 85,
+				"h": 98
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 85,
+				"h": 98
+			},
+			"sourceSize": {
+				"w": 85,
+				"h": 98
+			}
+		},
+		"Kong-run-right-2.png": {
+			"frame": {
+				"x": 1,
+				"y": 201,
+				"w": 85,
+				"h": 98
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 85,
+				"h": 98
+			},
+			"sourceSize": {
+				"w": 85,
+				"h": 98
 			}
 		}
 	},
 	"meta": {
 		"app": "http://www.codeandweb.com/texturepacker",
 		"version": "1.0",
-		"image": "spritesheet.png",
+		"image": "player.png",
 		"format": "RGBA8888",
 		"size": {
-			"w": 255,
-			"h": 196
+			"w": 261,
+			"h": 300
 		},
 		"scale": "1"
 	}

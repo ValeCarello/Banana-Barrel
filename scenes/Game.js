@@ -5,10 +5,11 @@ export default class Game extends Phaser.Scene {
     super("game");
 
     // Variables
-    this.bananasCollected = 0;
+    this.bananasCollected = null;
     this.initialLives = 3; // Store initial lives
     this.lives = this.initialLives;
     this.objectFallSpeed = 300;
+    this.shadowGraphics = null;
   }
 
   preload() {
@@ -22,18 +23,19 @@ export default class Game extends Phaser.Scene {
     this.load.image("coconut", "./public/assets/coconut.png");
     this.load.image("peach", "./public/assets/peach.png");
     this.load.image("pineapple", "./public/assets/pineapple.png");
-    this.load.image("barrel", "./public/assets/barrel.png")
+    this.load.image("barrel", "./public/assets/barrel.png");
   }
 
   create() {
+    this.bananasCollected = 0;
     // Background and platform
     this.add.image(400, 300, "background").setScale(1.24);
     this.platform = this.physics.add.staticGroup();
-    this.platform.create(400, 568, "platform").setScale(1).refreshBody();
+    this.platform.create(400, 568, "platform").setScale(0.7).refreshBody();
 
     // Player
-    this.player = this.physics.add.sprite(400, 420, "player", "adventurer-idle-00.png");
-    this.player.setScale(1);
+    this.player = this.physics.add.sprite(400, 420, "player", "Kong-idle-right.png");
+    this.player.setScale(1.09);
     this.player.body.setSize(this.player.width * 0.5, this.player.height * 0.7);
     this.player.setGravityY(3900);
 
@@ -59,39 +61,54 @@ export default class Game extends Phaser.Scene {
     });
 
     // UI
-    this.bananaText = this.add.text(100, 38, '0', { fontSize: '25px', fill: '#000000', fontWeight: "bold" })
-    this.add.image(70,50, "barrel").setScale(0.5);
+    this.bananaText = this.add.text(100, 38, '0', { fontSize: '25px', fill: '#000000', fontWeight: "bold" });
+    this.add.image(70, 50, "barrel").setScale(0.5);
     this.livesImages = [];
     this.updateLivesUI(); // Update lives UI
-    this.objectFallSpeed = 300; // Initial object fall speed
+
+    // Shadow graphics for objects
+    this.shadowGraphics = this.add.graphics();
 
     // Increase difficulty over time
     this.time.addEvent({
-      delay: 3000, // Increase every 10 seconds
+      delay: 3000, // Increase every 3 seconds
       callback: () => {
-        this.objectFallSpeed += 1;
-         
+        this.objectFallSpeed += 15;
       },
       loop: true
     });
 
-     // Increase difficulty over time
-    this.time.addEvent({
-      delay: 3000, 
-      callback: () => {
-        this.delay += 10;
-        
-      },
-      loop: true
-    });
+    this.createAnimations();
   }
 
   update() {
-   
     // Mouse movement
     const mouseX = this.input.mousePointer.x;
     const speed = 0.09; // Adjust how quickly player follows mouse
-    this.player.x = Phaser.Math.Interpolation.Linear([this.player.x, mouseX], speed);
+    const newX = this.player.x + (mouseX - this.player.x) * speed;
+
+    if (Math.abs(newX - this.player.x) > 1) {
+      // Player movement based on mouse position
+      if (this.isOnPlatform) {
+        if (newX > this.player.x) {
+          this.player.anims.play('Kong-run-right', true);
+        } else {
+          this.player.anims.play('Kong-run-left', true);
+        }
+      }
+    } else {
+      // Idle animation based on direction
+      if (this.isOnPlatform) {
+        if (this.player.flipX) {
+          this.player.anims.play('Kong-idle-left', true);
+        } else {
+          this.player.anims.play('Kong-idle-right', true);
+        }
+      }
+    }
+
+    // Set the player's position
+    this.player.x = newX;
 
     // Keep player on platform if on one
     if (this.isOnPlatform) {
@@ -102,6 +119,13 @@ export default class Game extends Phaser.Scene {
     if (this.player.y > this.cameras.main.height) {
       this.loseAllLives(); // Lose all lives if player falls off
     }
+
+    // Update shadow positions
+    this.shadowGraphics.clear();
+    this.platform.getChildren().forEach(platform => {
+      this.shadowGraphics.fillStyle(0x000000, 0.3);
+      this.shadowGraphics.fillRect(platform.x - platform.displayWidth / 2, platform.y + 10, platform.displayWidth, 10);
+    });
   }
 
   onPlatform(player, platform) {
@@ -112,14 +136,13 @@ export default class Game extends Phaser.Scene {
   doJump() {
     if (this.player.body.touching.down || this.player.body.onFloor()) {
       this.player.setVelocityY(-1150); // Jump velocity
+      this.player.play("Kong-jump");
       this.isOnPlatform = false; // Reset platform flag
     }
   }
 
-
-
   dropObject() {
-    const objects = ["rock", "coconut", "pineapple", "banana", "peach"];
+    const objects = ["rock", "coconut", "banana", "peach"];
     const randomObject = Phaser.Math.RND.pick(objects); // Randomly pick an object
     const x = Phaser.Math.Between(100, 700); // Random x position
     const y = -50; // Starting y position
@@ -128,7 +151,7 @@ export default class Game extends Phaser.Scene {
     // Create and handle different objects
     if (randomObject === "banana") {
       object = this.physics.add.image(x, y, randomObject);
-      object.setScale(1.5).setGravityY(400); 
+      object.setScale(1.5).setGravityY(400);
       this.physics.add.collider(object, this.platform, (banana, platform) => {
         this.loseLife();
         banana.destroy();
@@ -154,11 +177,13 @@ export default class Game extends Phaser.Scene {
           object.setVelocity(150, -350); // Example direction right and up
         } else if (randomObject === "coconut") {
           object.setVelocity(-150, -350); // Example direction left and up
-        } else if (randomObject === "pineapple") {
-          object.setVelocity(150, -350); // Example direction right and up
         }
       });
       this.physics.add.overlap(this.player, object, this.loseAllLives, null, this);
+
+      // Shadow for falling objects
+      this.shadowGraphics.fillStyle(0x000000, 0.3);
+      this.shadowGraphics.fillRect(object.x - object.displayWidth / 2, this.platform.children.entries[0].y + 10, object.displayWidth, 10);
     }
 
     if (object) {
@@ -207,9 +232,11 @@ export default class Game extends Phaser.Scene {
     if (this.player.x < platformLeftEdge) {
       this.player.x = platformLeftEdge; // Ensure player stays on platform left edge
       this.player.setVelocityX(0); // Stop player movement
+      this.player.flipX = true; // Flip player sprite left
     } else if (this.player.x > platformRightEdge) {
       this.player.x = platformRightEdge; // Ensure player stays on platform right edge
       this.player.setVelocityX(0); // Stop player movement
+      this.player.flipX = false; // Flip player sprite right
     }
   }
 
@@ -224,6 +251,35 @@ export default class Game extends Phaser.Scene {
       this.livesImages.push(lifeImage); // Store life images
     }
   }
+
+  createAnimations() {
+    this.anims.create({
+      key: "Kong-jump",
+      frames: [{ key: "player", frame: "Kong-jump.png" }]
+    });
+
+    this.anims.create({
+      key: "Kong-idle-left",
+      frames: [{ key: "player", frame: "Kong-idle-left.png" }]
+    });
+
+    this.anims.create({
+      key: "Kong-idle-right",
+      frames: [{ key: "player", frame: "Kong-idle-right.png" }]
+    });
+
+    this.anims.create({
+      key: "Kong-run-left",
+      frames: this.anims.generateFrameNames("player", { start: 1, end: 2, prefix: "Kong-run-left-", suffix: ".png" }),
+      repeat: -1,
+      frameRate: 15
+    });
+
+    this.anims.create({
+      key: "Kong-run-right",
+      frames: this.anims.generateFrameNames("player", { start: 1, end: 2, prefix: "Kong-run-right-", suffix: ".png" }),
+      repeat: -1,
+      frameRate: 15
+    });
+  }
 }
-
-
