@@ -2,8 +2,16 @@ export default class GameOver extends Phaser.Scene {
     constructor() {
       super("gameOver");
     }
-  
+    preload() {
+
+      this.load.audio('gameoverMusic', ['./public/audio/gameover_music.mp3', './public/audio/gameover_music.ogg']);
+    }
     create() {
+
+        // Play music for Game
+    this.gameoverMusic = this.sound.add('gameoverMusic', { loop: true });
+    this.gameoverMusic.volume = 0.5;
+    this.gameoverMusic.play();
       // Display game over text or image
       this.add.text(400, 300, 'Game Over', { fontSize: '48px', fill: '#fff' }).setOrigin(0.5);
   
@@ -13,6 +21,7 @@ export default class GameOver extends Phaser.Scene {
       // Restart the game when the player clicks anywhere
       this.input.on('pointerdown', () => {
         this.scene.start('game'); 
+        this.gameoverMusic.stop();
       });
     }
   }

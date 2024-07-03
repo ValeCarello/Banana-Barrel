@@ -9,7 +9,7 @@ export default class Game extends Phaser.Scene {
     this.initialLives = 3; // Store initial lives
     this.lives = this.initialLives;
     this.objectFallSpeed = 300;
-    this.shadowGraphics = null;
+    
   }
 
   preload() {
@@ -24,14 +24,22 @@ export default class Game extends Phaser.Scene {
     this.load.image("peach", "./public/assets/peach.png");
     this.load.image("pineapple", "./public/assets/pineapple.png");
     this.load.image("barrel", "./public/assets/barrel.png");
+    this.load.audio('gameMusic', ['./public/audio/game_music.mp3', './public/audio/game_music.ogg']);
   }
 
   create() {
+
+    // Play music for Game
+    this.gameMusic = this.sound.add('gameMusic', { loop: true });
+    this.gameMusic.volume = 0.5;
+    this.gameMusic.play();
+
+
     this.bananasCollected = 0;
     // Background and platform
-    this.add.image(400, 300, "background").setScale(1.24);
+    this.add.image(400, 300, "background").setScale(1);
     this.platform = this.physics.add.staticGroup();
-    this.platform.create(400, 568, "platform").setScale(0.7).refreshBody();
+    this.platform.create(400, 568, "platform").setScale(1).refreshBody();
 
     // Player
     this.player = this.physics.add.sprite(400, 420, "player", "Kong-idle-right.png");
@@ -61,13 +69,10 @@ export default class Game extends Phaser.Scene {
     });
 
     // UI
-    this.bananaText = this.add.text(100, 38, '0', { fontSize: '25px', fill: '#000000', fontWeight: "bold" });
+    this.bananaText = this.add.text(100, 25, '0', { fontSize: '60px', fill: '#fff', fontWeight: "bold" });
     this.add.image(70, 50, "barrel").setScale(0.5);
     this.livesImages = [];
     this.updateLivesUI(); // Update lives UI
-
-    // Shadow graphics for objects
-    this.shadowGraphics = this.add.graphics();
 
     // Increase difficulty over time
     this.time.addEvent({
@@ -84,7 +89,7 @@ export default class Game extends Phaser.Scene {
   update() {
     // Mouse movement
     const mouseX = this.input.mousePointer.x;
-    const speed = 0.09; // Adjust how quickly player follows mouse
+    const speed = 0.14; // Adjust how quickly player follows mouse
     const newX = this.player.x + (mouseX - this.player.x) * speed;
 
     if (Math.abs(newX - this.player.x) > 1) {
@@ -119,13 +124,6 @@ export default class Game extends Phaser.Scene {
     if (this.player.y > this.cameras.main.height) {
       this.loseAllLives(); // Lose all lives if player falls off
     }
-
-    // Update shadow positions
-    this.shadowGraphics.clear();
-    this.platform.getChildren().forEach(platform => {
-      this.shadowGraphics.fillStyle(0x000000, 0.3);
-      this.shadowGraphics.fillRect(platform.x - platform.displayWidth / 2, platform.y + 10, platform.displayWidth, 10);
-    });
   }
 
   onPlatform(player, platform) {
@@ -180,10 +178,6 @@ export default class Game extends Phaser.Scene {
         }
       });
       this.physics.add.overlap(this.player, object, this.loseAllLives, null, this);
-
-      // Shadow for falling objects
-      this.shadowGraphics.fillStyle(0x000000, 0.3);
-      this.shadowGraphics.fillRect(object.x - object.displayWidth / 2, this.platform.children.entries[0].y + 10, object.displayWidth, 10);
     }
 
     if (object) {
@@ -221,6 +215,7 @@ export default class Game extends Phaser.Scene {
 
   gameOver() {
     this.lives = this.initialLives; // Reset lives
+    this.gameMusic.stop(); // Stop music when game over
     this.scene.start("gameOver"); // Start game over scene
   }
 
@@ -232,11 +227,11 @@ export default class Game extends Phaser.Scene {
     if (this.player.x < platformLeftEdge) {
       this.player.x = platformLeftEdge; // Ensure player stays on platform left edge
       this.player.setVelocityX(0); // Stop player movement
-      this.player.flipX = true; // Flip player sprite left
+      this.player.flipX = true; // Set player facing left
     } else if (this.player.x > platformRightEdge) {
       this.player.x = platformRightEdge; // Ensure player stays on platform right edge
       this.player.setVelocityX(0); // Stop player movement
-      this.player.flipX = false; // Flip player sprite right
+      this.player.flipX = false; // Set player facing right
     }
   }
 
@@ -272,14 +267,17 @@ export default class Game extends Phaser.Scene {
       key: "Kong-run-left",
       frames: this.anims.generateFrameNames("player", { start: 1, end: 2, prefix: "Kong-run-left-", suffix: ".png" }),
       repeat: -1,
-      frameRate: 15
+      frameRate: 10
     });
 
     this.anims.create({
       key: "Kong-run-right",
       frames: this.anims.generateFrameNames("player", { start: 1, end: 2, prefix: "Kong-run-right-", suffix: ".png" }),
       repeat: -1,
-      frameRate: 15
+      frameRate: 10
     });
   }
 }
+
+
+
