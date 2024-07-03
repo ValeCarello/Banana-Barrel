@@ -216,7 +216,7 @@ export default class Game extends Phaser.Scene {
   gameOver() {
     this.lives = this.initialLives; // Reset lives
     this.gameMusic.stop(); // Stop music when game over
-    this.scene.start("gameOver"); // Start game over scene
+    this.scene.start("gameOver", { points: this.bananasCollected }) // Start game over scene
   }
 
   keepPlayerOnPlatform() {
