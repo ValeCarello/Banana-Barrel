@@ -76,7 +76,7 @@ export default class Game extends Phaser.Scene {
     this.time.addEvent({
       delay: 2000, 
       callback: () => {
-        this.objectFallSpeed += 30;
+        this.objectFallSpeed += 20;
       },
       loop: true
     });
