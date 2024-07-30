@@ -6,7 +6,7 @@ export default class Game extends Phaser.Scene {
 
     // Variables
     this.bananasCollected = null;
-    this.initialLives = 3; // Store initial lives
+    this.initialLives = 3; 
     this.lives = this.initialLives;
     this.objectFallSpeed = 300;
     
@@ -48,7 +48,7 @@ export default class Game extends Phaser.Scene {
 
     // Collisions
     this.physics.add.collider(this.player, this.platform, this.onPlatform, null, this);
-    this.physics.add.collider(this.player, this.physics.world.bounds, this.playerHitWorldBounds, null, this);
+   
 
     // Inputs
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -56,8 +56,7 @@ export default class Game extends Phaser.Scene {
       this.doJump();
     }, this);
 
-    // Flag
-    this.isOnPlatform = false;
+    
 
     // Object dropping
     this.time.addEvent({
@@ -71,13 +70,13 @@ export default class Game extends Phaser.Scene {
     this.bananaText = this.add.text(100, 25, '0', { fontSize: '60px', fill: '#fff', fontWeight: "bold" });
     this.add.image(70, 50, "barrel").setScale(0.5);
     this.livesImages = [];
-    this.updateLivesUI(); // Update lives UI
+    this.updateLivesUI(); 
 
     // Increase difficulty over time
     this.time.addEvent({
-      delay: 3000, // Increase every 3 seconds
+      delay: 2000, 
       callback: () => {
-        this.objectFallSpeed += 15;
+        this.objectFallSpeed += 30;
       },
       loop: true
     });
@@ -139,10 +138,10 @@ export default class Game extends Phaser.Scene {
   }
 
   dropObject() {
-    const objects = ["rock", "coconut", "banana", "peach"];
+    const objects = ["rock", "coconut", "banana", "peach", "banana"];
     const randomObject = Phaser.Math.RND.pick(objects); // Randomly pick an object
     const x = Phaser.Math.Between(100, 700); // Random x position
-    const y = -50; // Starting y position
+    const y = -10; // Starting y position
     let object;
 
     // Create and handle different objects
@@ -168,7 +167,7 @@ export default class Game extends Phaser.Scene {
       }
     } else {
       object = this.physics.add.image(x, y, randomObject);
-      object.setScale(0.4).setGravityY(750).setSize(30, 30); // Scale and gravity
+      object.setScale(0.4).setGravityY(550).setSize(30, 30); // Scale and gravity
       this.physics.add.collider(object, this.platform, (object, platform) => {
         if (randomObject === "rock") {
           object.setVelocity(150, -470); // Example direction right and up
@@ -192,7 +191,7 @@ export default class Game extends Phaser.Scene {
   }
 
   collectBanana(player, banana) {
-    banana.disableBody(true, true); // Disable physics and hide banana
+    
     this.bananasCollected++; // Increment banana count
     this.bananaText.setText(`${this.bananasCollected}`); // Update UI text
     banana.destroy(); // Remove banana from game
@@ -213,6 +212,7 @@ export default class Game extends Phaser.Scene {
   }
 
   gameOver() {
+    this.objectFallSpeed = 300;
     this.lives = this.initialLives; // Reset lives
     this.gameMusic.stop(); // Stop music when game over
     this.scene.start("gameOver", { points: this.bananasCollected }) // Start game over scene
@@ -226,11 +226,11 @@ export default class Game extends Phaser.Scene {
     if (this.player.x < platformLeftEdge) {
       this.player.x = platformLeftEdge; // Ensure player stays on platform left edge
       this.player.setVelocityX(0); // Stop player movement
-      this.player.flipX = true; // Set player facing left
+      
     } else if (this.player.x > platformRightEdge) {
       this.player.x = platformRightEdge; // Ensure player stays on platform right edge
       this.player.setVelocityX(0); // Stop player movement
-      this.player.flipX = false; // Set player facing right
+     
     }
   }
 
